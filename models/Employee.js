@@ -46,11 +46,11 @@ const employeeSchema = new mongoose.Schema({
   // Role
   role: {
     type: String,
-    enum: ['Admin', 'Counselor'],
-    default: 'Counselor',
+    enum: ['Admin', 'councelor'],
+    default: 'councelor',
     required: true,
   },
-  counselorName: { type: String },
+  councelorName: { type: String },
 
   communicationConsent: {
     type: Boolean,

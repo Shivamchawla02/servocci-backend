@@ -29,7 +29,7 @@ const addEmployee = async (req, res) => {
       emergencyPhone,
       emergencyEmail,
       role,
-      counselorName,
+      councelorName,
       communicationConsent 
     } = req.body;
 
@@ -68,7 +68,7 @@ const addEmployee = async (req, res) => {
       emergencyPhone,
       emergencyEmail,
       role,
-      counselorName,
+      councelorName,
       communicationConsent,
       createdBy: req.user._id
     });
@@ -91,7 +91,7 @@ const getAllEmployees = async (req, res) => {
       // Admin can view all students
       employees = await Employee.find().populate('department').populate('createdBy');
     } else {
-      // Counselor sees only their own students
+      // councelor sees only their own students
       employees = await Employee.find({ createdBy: user._id }).populate('department');
     }
 
