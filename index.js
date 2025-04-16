@@ -26,10 +26,11 @@ app.use('/api/councellor', CouncellorRouter);
 app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 app.use('/public', express.static(path.join(process.cwd(), 'public')));
 
+app.get('/', (req, res) => {
+  res.send('Backend is working ✅');
+});
+
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
 
-app.get('/', (req, res) => {
-  res.send('Backend is working ✅');
-});
