@@ -9,3 +9,6 @@ const connectToDatabase = async () => {
 }
 
 export default connectToDatabase;
+
+
+//mongodb+srv://servocci:malik_merchants_321@servoccicluster.6bnm6xh.mongodb.net/?retryWrites=true&w=majority&appName=ServocciCluster
