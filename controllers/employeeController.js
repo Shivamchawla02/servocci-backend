@@ -28,16 +28,14 @@ const addEmployee = async (req, res) => {
       emergencyContactName,
       emergencyPhone,
       emergencyEmail,
-      role,
-      councelorName,
       communicationConsent 
     } = req.body;
 
-    // Optional: validate required fields (you can customize this)
-    if (!fullName || !dob || !email || !department || !role) {
+    // Validate required fields
+    if (!fullName || !dob || !email || !department) {
       return res.status(400).json({
         success: false,
-        error: "Please fill all required fields: fullName, dob, email, department, and role."
+        error: "Please fill all required fields: fullName, dob, email, and department."
       });
     }
 
@@ -67,8 +65,6 @@ const addEmployee = async (req, res) => {
       emergencyContactName,
       emergencyPhone,
       emergencyEmail,
-      role,
-      councelorName,
       communicationConsent,
       createdBy: req.user._id
     });
@@ -88,11 +84,14 @@ const getAllEmployees = async (req, res) => {
     let employees;
 
     if (user.role === 'admin') {
-      // Admin can view all students
-      employees = await Employee.find().populate('department').populate('createdBy');
+      // Admin sees all
+      employees = await Employee.find()
+        .populate('department')
+        .populate('createdBy', 'name email'); // Add specific fields if needed
     } else {
-      // councelor sees only their own students
-      employees = await Employee.find({ createdBy: user._id }).populate('department');
+      // Counselor sees only their entries
+      employees = await Employee.find({ createdBy: user._id })
+        .populate('department');
     }
 
     res.status(200).json({ success: true, employees });
@@ -102,13 +101,16 @@ const getAllEmployees = async (req, res) => {
   }
 };
 
-
 const getSingleEmployee = async (req, res) => {
   try {
-    const employee = await Employee.findById(req.params.id).populate('department');
+    const employee = await Employee.findById(req.params.id)
+      .populate('department')
+      .populate('createdBy', 'name email');
+
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
+
     res.status(200).json({ employee });
   } catch (error) {
     console.error('Error fetching employee:', error);

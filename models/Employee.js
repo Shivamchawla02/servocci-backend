@@ -9,6 +9,7 @@ const employeeSchema = new mongoose.Schema({
   phoneHome: { type: String },
   email: { type: String, required: true },
   permanentAddress: { type: String },
+  aadhaarNumber: { type: String }, // ✅ Aadhaar field
 
   // Academic Info
   tenthSchool: { type: String },
@@ -43,15 +44,6 @@ const employeeSchema = new mongoose.Schema({
   emergencyPhone: { type: String },
   emergencyEmail: { type: String },
 
-  // Role
-  role: {
-    type: String,
-    enum: ['Admin', 'councelor'],
-    default: 'councelor',
-    required: true,
-  },
-  councelorName: { type: String },
-
   communicationConsent: {
     type: Boolean,
     default: false,
@@ -76,7 +68,7 @@ const employeeSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   }
-  
+
 }, { timestamps: true });
 
 const Employee = mongoose.model('Employee', employeeSchema);
