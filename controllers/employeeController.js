@@ -11,6 +11,7 @@ const addEmployee = async (req, res) => {
       phoneHome,
       email,
       permanentAddress,
+      aadhaarNumber, // ✅ Added here
       tenthSchool,
       tenthBoard,
       tenthYear,
@@ -48,6 +49,7 @@ const addEmployee = async (req, res) => {
       phoneHome,
       email,
       permanentAddress,
+      aadhaarNumber, // ✅ Added here
       tenthSchool,
       tenthBoard,
       tenthYear,
@@ -84,12 +86,10 @@ const getAllEmployees = async (req, res) => {
     let employees;
 
     if (user.role === 'admin') {
-      // Admin sees all
       employees = await Employee.find()
         .populate('department')
-        .populate('createdBy', 'name email'); // Add specific fields if needed
+        .populate('createdBy', 'name email');
     } else {
-      // Counselor sees only their entries
       employees = await Employee.find({ createdBy: user._id })
         .populate('department');
     }
