@@ -22,7 +22,8 @@ const addDepartment = async (req, res) => {
             fees, 
             description, 
             state,
-            place
+            place,
+            logo // ✅ Accept logo
         } = req.body;
 
         if (!course_name || !dep_name || !duration || !eligibility || !fees || !state || !place) {
@@ -38,7 +39,8 @@ const addDepartment = async (req, res) => {
             fees,
             description,
             state,
-            place
+            place,
+            logo // ✅ Save logo to DB
         });
 
         await newDep.save();
@@ -48,7 +50,7 @@ const addDepartment = async (req, res) => {
     }
 };
 
-// ✅ Get total department count
+// Get total department count
 const getDepartmentCount = async (req, res) => {
     try {
         const count = await Department.countDocuments();

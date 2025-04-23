@@ -8,11 +8,13 @@ const departmentSchema = new mongoose.Schema({
     eligibility: { type: String, required: true },
     fees: { type: Number, required: true },
     description: { type: String },
-    place: { type: String, required: true }, // ✅ New field added
+    place: { type: String, required: true },
     state: { type: String, required: true },
+    logo: { type: String }, // ✅ Add this field to store the image URL
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
-});
+  });
+  
 
 // Removed website_url field
 
