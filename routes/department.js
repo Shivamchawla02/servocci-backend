@@ -6,13 +6,17 @@ import {
   getDepartmentCount
 } from '../controllers/departmentController.js';
 import Department from '../models/Department.js';
+import cloudinary from '../utils/cloudinary.js';
+import multer from 'multer';
+import fs from 'fs';
 
 const router = express.Router();
 
+// Brochure upload config (Cloudinary)
+const brochureUpload = multer({ dest: 'temp/' });
+
 router.get('/', authMiddleware, getDepartments);
 router.post('/add', authMiddleware, addDepartment);
-
-// NEW: Count departments
 router.get('/count', authMiddleware, getDepartmentCount);
 
 router.get('/:id', async (req, res) => {
@@ -55,5 +59,37 @@ router.put('/:id/logo', authMiddleware, async (req, res) => {
   }
 });
 
+// PUT /api/department/:id/brochure - Upload brochure to Cloudinary
+router.put('/:id/brochure', authMiddleware, brochureUpload.single('brochure'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No brochure file uploaded' });
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: 'raw',
+      folder: 'servocci/brochures',
+      public_id: `department-${req.params.id}-brochure`,
+      overwrite: true
+    });
+
+    fs.unlinkSync(req.file.path); // Clean up local temp file
+
+    const updatedDepartment = await Department.findByIdAndUpdate(
+      req.params.id,
+      { brochure: result.secure_url },
+      { new: true }
+    );
+
+    if (!updatedDepartment) {
+      return res.status(404).json({ success: false, message: 'Department not found' });
+    }
+
+    res.status(200).json({ success: true, department: updatedDepartment });
+  } catch (error) {
+    console.error('Error uploading brochure:', error);
+    res.status(500).json({ success: false, message: 'Server error while uploading brochure' });
+  }
+});
 
 export default router;

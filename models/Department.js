@@ -11,6 +11,10 @@ const departmentSchema = new mongoose.Schema({
     place: { type: String, required: true },
     state: { type: String, required: true },
     logo: { type: String }, // ✅ Add this field to store the image URL
+    brochure: {
+      type: String,
+      default: ''
+    },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
   });
