@@ -101,7 +101,7 @@ const getAllCouncellors = async (req, res) => {
 
 const getCouncellorCount = async (req, res) => {
   try {
-    const count = await Councellor.countDocuments({ role: 'councelor' }); // ✅ filter by role
+    const count = await Councellor.countDocuments({ role: 'councellor' }); // ✅ filter by role
     res.status(200).json({ totalCouncellors: count });
   } catch (error) {
     console.error("Error counting councellors:", error);

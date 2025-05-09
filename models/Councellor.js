@@ -56,8 +56,8 @@ const councellorSchema = new Schema({
   },
   role: {
     type: String,
-    enum: ['councelor', 'admin'],
-    default: 'councelor',
+    enum: ['councellor', 'admin'],
+    default: 'councellor',
   },
   counsellorCode: {
   type: String,
