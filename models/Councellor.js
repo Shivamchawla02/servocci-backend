@@ -59,6 +59,12 @@ const councellorSchema = new Schema({
     enum: ['councelor', 'admin'],
     default: 'councelor',
   },
+  counsellorCode: {
+  type: String,
+  required: true,
+  unique: true,
+  match: /^\d{4}$/,
+},
 }, {
   timestamps: true // Automatically handles createdAt & updatedAt
 });

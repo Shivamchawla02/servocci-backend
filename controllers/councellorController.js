@@ -51,11 +51,20 @@ const addCouncellor = async (req, res) => {
 
     const savedUser = await newUser.save();
 
-    // Save Councellor (don't forget email here!)
+    // Generate unique 4-digit counsellorCode
+    const latestCouncellor = await Councellor.findOne().sort({ counsellorCode: -1 });
+    let counsellorCode = "0001"; // Default value if no counselors exist
+
+    if (latestCouncellor) {
+      const newCode = parseInt(latestCouncellor.counsellorCode) + 1;
+      counsellorCode = newCode.toString().padStart(4, "0");
+    }
+
+    // Save Councellor
     const newCouncellor = new Councellor({
       userId: savedUser._id,
       name,
-      email, // ✅ include email
+      email,
       phone,
       aadhaar,
       pan,
@@ -63,6 +72,7 @@ const addCouncellor = async (req, res) => {
       gst,
       password: hashPassword,
       role,
+      counsellorCode, // Add the counsellorCode here
     });
 
     await newCouncellor.save();
@@ -77,6 +87,7 @@ const addCouncellor = async (req, res) => {
       .json({ success: false, error: "Server error in adding councellor" });
   }
 };
+
 
 const getAllCouncellors = async (req, res) => {
   try {
