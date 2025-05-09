@@ -30,6 +30,10 @@ app.get('/', (req, res) => {
   res.send('Backend is working ✅');
 });
 
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
