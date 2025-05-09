@@ -55,9 +55,15 @@ const addCouncellor = async (req, res) => {
     const latestCouncellor = await Councellor.findOne().sort({ counsellorCode: -1 });
     let counsellorCode = "0001"; // Default value if no counselors exist
 
-    if (latestCouncellor) {
-      const newCode = parseInt(latestCouncellor.counsellorCode) + 1;
+        if (
+      latestCouncellor &&
+      latestCouncellor.counsellorCode &&
+      /^\d{4}$/.test(latestCouncellor.counsellorCode)
+    ) {
+      const newCode = parseInt(latestCouncellor.counsellorCode, 10) + 1;
       counsellorCode = newCode.toString().padStart(4, "0");
+    } else {
+      counsellorCode = "0001";
     }
 
     // Save Councellor
