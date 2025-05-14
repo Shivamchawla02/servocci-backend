@@ -4,7 +4,6 @@ const councellorSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: true,
   },
   name: {
     type: String,
@@ -21,26 +20,22 @@ const councellorSchema = new Schema({
   
   phone: {
     type: String,
-    required: true,
     unique: true,
     trim: true,
   },
   aadhaar: {
     type: String,
-    required: true,
     unique: true,
     trim: true,
   },
   pan: {
     type: String,
-    required: true,
     unique: true,
     uppercase: true,
     trim: true,
   },
   username: {
     type: String,
-    required: true,
     unique: true,
     trim: true,
   },
@@ -60,13 +55,12 @@ const councellorSchema = new Schema({
     default: 'councelor',
   },
   counsellorCode: {
-  type: String,
-  required: true,
-  unique: true,
-  match: /^\d{4}$/,
-},
+    type: String,
+    unique: true,
+    match: /^\d{4}$/,
+  },
 }, {
-  timestamps: true // Automatically handles createdAt & updatedAt
+  timestamps: true
 });
 
 const Councellor = mongoose.model("Councellor", councellorSchema);
