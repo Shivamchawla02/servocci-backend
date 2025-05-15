@@ -41,35 +41,36 @@ const addEmployee = async (req, res) => {
     }
 
     const newEmployee = new Employee({
-      fullName,
-      dob,
-      gender,
-      nationality,
-      phoneMobile,
-      phoneHome,
-      email,
-      permanentAddress,
-      aadhaarNumber,
-      tenthSchool,
-      tenthBoard,
-      tenthYear,
-      tenthPercentage,
-      twelfthSchool,
-      twelfthBoard,
-      twelfthYear,
-      twelfthPercentage,
-      subjectsTaken,
-      department,
-      intendedMajor,
-      minor,
-      preferredTerm,
-      scholarship,
-      emergencyContactName,
-      emergencyPhone,
-      emergencyEmail,
-      communicationConsent,
-      createdBy: req.user._id
-    });
+        fullName,
+        dob,
+        gender,
+        nationality,
+        phoneMobile,
+        phoneHome,
+        email,
+        permanentAddress,
+        aadhaarNumber,
+        tenthSchool,
+        tenthBoard,
+        tenthYear,
+        tenthPercentage,
+        twelfthSchool,
+        twelfthBoard,
+        twelfthYear,
+        twelfthPercentage,
+        subjectsTaken,
+        department: department || undefined, // ✅ Only set if truthy
+        intendedMajor,
+        minor,
+        preferredTerm,
+        scholarship,
+        emergencyContactName,
+        emergencyPhone,
+        emergencyEmail,
+        communicationConsent,
+        createdBy: req.user._id
+      });
+
 
     await newEmployee.save();
     res.status(201).json({ success: true, message: "Employee added successfully!" });
