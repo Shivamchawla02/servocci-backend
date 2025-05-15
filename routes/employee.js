@@ -59,4 +59,7 @@ router.post(
   uploadDocuments
 );
 
+// routes/employee.js
+router.put('/:id/lead-status', verifyToken, updateLeadStatus);
+
 export default router;

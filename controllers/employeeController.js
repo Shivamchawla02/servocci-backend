@@ -132,9 +132,25 @@ export const getEmployeeCount = async (req, res) => {
   }
 };
 
+export const updateLeadStatus = async (req, res) => {
+  try {
+    const { leadStatus } = req.body;
+    const updated = await Employee.findByIdAndUpdate(
+      req.params.id,
+      { leadStatus },
+      { new: true }
+    );
+    res.status(200).json({ success: true, employee: updated });
+  } catch (err) {
+    console.error("Error updating lead status:", err);
+    res.status(500).json({ success: false, message: 'Failed to update lead status' });
+  }
+};
+
 export default {
   addEmployee,
   getAllEmployees,
   getSingleEmployee,
-  getEmployeeCount
+  getEmployeeCount,
+  updateLeadStatus
 };

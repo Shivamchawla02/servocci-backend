@@ -66,7 +66,14 @@ const employeeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  }
+  },
+  
+  leadStatus: {
+  type: String,
+  enum: ['Follow-up', 'Call not picked', 'Call-Back', 'Not Interested'],
+  default: '',
+}
+
 
 }, { timestamps: true });
 
