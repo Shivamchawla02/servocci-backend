@@ -11,7 +11,7 @@ const addEmployee = async (req, res) => {
       phoneHome,
       email,
       permanentAddress,
-      aadhaarNumber, // ✅ Added here
+      aadhaarNumber,
       tenthSchool,
       tenthBoard,
       tenthYear,
@@ -32,11 +32,11 @@ const addEmployee = async (req, res) => {
       communicationConsent 
     } = req.body;
 
-    // Validate required fields
-    if (!fullName || !dob || !email || !department) {
+    // ✅ Updated required fields check
+    if (!fullName || !phoneMobile) {
       return res.status(400).json({
         success: false,
-        error: "Please fill all required fields: fullName, dob, email, and department."
+        error: "Please provide both fullName and phoneMobile."
       });
     }
 
@@ -49,7 +49,7 @@ const addEmployee = async (req, res) => {
       phoneHome,
       email,
       permanentAddress,
-      aadhaarNumber, // ✅ Added here
+      aadhaarNumber,
       tenthSchool,
       tenthBoard,
       tenthYear,
@@ -79,6 +79,7 @@ const addEmployee = async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to add employee" });
   }
 };
+
 
 const getAllEmployees = async (req, res) => {
   try {

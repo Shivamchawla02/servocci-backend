@@ -2,14 +2,14 @@ import mongoose from 'mongoose';
 
 const employeeSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
-  dob: { type: Date, required: true },
+  dob: { type: Date },
   gender: { type: String },
   nationality: { type: String },
-  phoneMobile: { type: String },
+  phoneMobile: { type: String, required: true },
   phoneHome: { type: String },
-  email: { type: String, required: true },
+  email: { type: String },
   permanentAddress: { type: String },
-  aadhaarNumber: { type: String }, // ✅ Aadhaar field
+  aadhaarNumber: { type: String },
 
   // Academic Info
   tenthSchool: { type: String },
@@ -26,8 +26,7 @@ const employeeSchema = new mongoose.Schema({
   // Institution & Course
   department: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Department',
-    required: true,
+    ref: 'Department'
   },
   intendedMajor: { type: String },
   minor: { type: String },
