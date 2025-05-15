@@ -72,7 +72,7 @@ const employeeSchema = new mongoose.Schema({
   type: String,
   enum: ['Follow-up', 'Call not picked', 'Call-Back', 'Not Interested'],
   default: '',
-}
+},
 
 
 }, { timestamps: true });

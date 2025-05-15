@@ -59,7 +59,28 @@ router.post(
   uploadDocuments
 );
 
-// routes/employee.js
-router.put('/:id/lead-status', verifyToken, updateLeadStatus);
+// PUT /api/employees/:id/lead-status
+router.put('/employees/:id/lead-status', async (req, res) => {
+  const { id } = req.params;
+  const { leadStatus } = req.body;
+
+  try {
+    const updated = await Employee.findByIdAndUpdate(
+      id,
+      { leadStatus },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    res.json({ message: 'Lead status updated', employee: updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 export default router;
