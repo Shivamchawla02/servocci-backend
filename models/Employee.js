@@ -74,6 +74,10 @@ const employeeSchema = new mongoose.Schema({
   default: '',
 },
 
+remarks: {
+  type: String,
+  default: ''
+}
 
 }, { timestamps: true });
 

@@ -147,10 +147,27 @@ export const updateLeadStatus = async (req, res) => {
   }
 };
 
+export const updateRemarks = async (req, res) => {
+  try {
+    const { remarks } = req.body;
+    const updated = await Employee.findByIdAndUpdate(
+      req.params.id,
+      { remarks },
+      { new: true }
+    );
+    res.status(200).json({ success: true, employee: updated });
+  } catch (err) {
+    console.error("Error updating remarks:", err);
+    res.status(500).json({ success: false, message: 'Failed to update remarks' });
+  }
+};
+
+
 export default {
   addEmployee,
   getAllEmployees,
   getSingleEmployee,
   getEmployeeCount,
-  updateLeadStatus
+  updateLeadStatus,
+  updateRemarks
 };

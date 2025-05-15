@@ -82,5 +82,6 @@ router.put('/:id/lead-status', authMiddleware, async (req, res) => {
   }
 });
 
+router.put('/:id/remarks', authMiddleware, employeeController.updateRemarks);
 
 export default router;
