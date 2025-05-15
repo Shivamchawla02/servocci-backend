@@ -60,7 +60,7 @@ router.post(
 );
 
 // PUT /api/employees/:id/lead-status
-router.put('/employees/:id/lead-status', async (req, res) => {
+router.put('/:id/lead-status', authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { leadStatus } = req.body;
 
@@ -72,7 +72,7 @@ router.put('/employees/:id/lead-status', async (req, res) => {
     );
 
     if (!updated) {
-      return res.status(404).json({ message: 'Employee not found' });
+      return res.status(404).json({ message: 'Student not found' });
     }
 
     res.json({ message: 'Lead status updated', employee: updated });
