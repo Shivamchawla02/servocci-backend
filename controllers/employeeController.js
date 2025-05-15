@@ -32,54 +32,57 @@ const addEmployee = async (req, res) => {
       communicationConsent 
     } = req.body;
 
-    // ✅ Updated required fields check
     if (!fullName || !phoneMobile) {
       return res.status(400).json({
         success: false,
-        error: "Please provide both fullName and phoneMobile."
+        error: "Please provide both fullName and phoneMobile for the student."
       });
     }
 
     const newEmployee = new Employee({
-        fullName,
-        dob,
-        gender,
-        nationality,
-        phoneMobile,
-        phoneHome,
-        email,
-        permanentAddress,
-        aadhaarNumber,
-        tenthSchool,
-        tenthBoard,
-        tenthYear,
-        tenthPercentage,
-        twelfthSchool,
-        twelfthBoard,
-        twelfthYear,
-        twelfthPercentage,
-        subjectsTaken,
-        department: department || undefined, // ✅ Only set if truthy
-        intendedMajor,
-        minor,
-        preferredTerm,
-        scholarship,
-        emergencyContactName,
-        emergencyPhone,
-        emergencyEmail,
-        communicationConsent,
-        createdBy: req.user._id
-      });
-
+      fullName,
+      dob,
+      gender,
+      nationality,
+      phoneMobile,
+      phoneHome,
+      email,
+      permanentAddress,
+      aadhaarNumber,
+      tenthSchool,
+      tenthBoard,
+      tenthYear,
+      tenthPercentage,
+      twelfthSchool,
+      twelfthBoard,
+      twelfthYear,
+      twelfthPercentage,
+      subjectsTaken,
+      department: department || undefined,
+      intendedMajor,
+      minor,
+      preferredTerm,
+      scholarship,
+      emergencyContactName,
+      emergencyPhone,
+      emergencyEmail,
+      communicationConsent,
+      createdBy: req.user._id
+    });
 
     await newEmployee.save();
-    res.status(201).json({ success: true, message: "Employee added successfully!" });
+    res.status(201).json({
+      success: true,
+      message: "Student added successfully!",
+      student: newEmployee
+    });
 
   } catch (error) {
-    console.error("Add Employee Error:", error);
-    res.status(500).json({ success: false, error: "Failed to add employee" });
+    console.error("Add Student Error:", error);
+    res.status(500).json({ success: false, error: "Failed to add student" });
   }
 };
+
 
 
 const getAllEmployees = async (req, res) => {
