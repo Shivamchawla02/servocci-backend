@@ -129,6 +129,19 @@ const getCouncellorById = async (req, res) => {
   }
 };
 
+const getCouncellorByUserId = async (req, res) => {
+  try {
+    const councellor = await Councellor.findOne({ userId: req.params.userId }).populate("userId", "email profileImage");
+    if (!councellor) {
+      return res.status(404).json({ success: false, message: "Councellor not found" });
+    }
+    res.status(200).json({ success: true, data: councellor });
+  } catch (error) {
+    console.error("Error fetching councellor by userId:", error);
+    res.status(500).json({ success: false, message: "Server error while fetching councellor" });
+  }
+};
 
 
-export { addCouncellor, upload, getAllCouncellors, getCouncellorCount, getCouncellorById };
+
+export { addCouncellor, upload, getAllCouncellors, getCouncellorCount, getCouncellorById, getCouncellorByUserId };
