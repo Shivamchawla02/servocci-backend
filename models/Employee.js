@@ -70,9 +70,21 @@ const employeeSchema = new mongoose.Schema({
   
   leadStatus: {
   type: String,
-  enum: ['Follow-up', 'Call not picked', 'Call-Back', 'Not Interested'],
-  default: '',
+  enum: [
+    'Lead Open',
+    'Call Not Picked',
+    'Call Back',
+    'Switch Off / Wrong No.',
+    'Follow Up',
+    'Admission Initiated',
+    'Application Received',
+    'Documentation Done',
+    'Admission Closed',
+    'Application Rejected'
+  ],
+  default: ''
 },
+
 
 remarks: {
   type: String,

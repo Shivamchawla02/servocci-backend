@@ -41,6 +41,34 @@ router.get('/status-summary', authMiddleware, async (req, res) => {
   }
 });
 
+// ✅ GET: Lead Status Summary for Dashboard
+router.get('/lead-summary', authMiddleware, async (req, res) => {
+  try {
+    const pipeline = [
+      {
+        $group: {
+          _id: '$leadStatus',
+          count: { $sum: 1 }
+        }
+      }
+    ];
+
+    const summary = await Employee.aggregate(pipeline);
+
+    const formatted = summary.reduce((acc, item) => {
+      acc[item._id || 'Unspecified'] = item.count;
+      return acc;
+    }, {});
+
+    res.json(formatted);
+  } catch (err) {
+    console.error('Error in lead-summary route:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
 // GET: Get Single Employee by ID
 router.get('/:id', authMiddleware, employeeController.getSingleEmployee);
 
