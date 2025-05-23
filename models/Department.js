@@ -1,26 +1,23 @@
 import mongoose from "mongoose";
 
 const departmentSchema = new mongoose.Schema({
-    course_name: { type: String, required: true },
-    dep_name: { type: String, required: true },
-    specialization: { type: String },
-    duration: { type: String, required: true },
-    eligibility: { type: String, required: true },
-    fees: { type: Number, required: true },
-    description: { type: String },
-    place: { type: String, required: true },
-    state: { type: String, required: true },
-    logo: { type: String }, // ✅ Add this field to store the image URL
-    brochure: {
-      type: String,
-      default: ''
-    },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-  });
-  
-
-// Removed website_url field
+  course_name: { type: String },
+  dep_name: { type: String, required: true }, // Only this field is required
+  specialization: { type: String },
+  duration: { type: String },
+  eligibility: { type: String },
+  fees: { type: Number },
+  description: { type: String },
+  place: { type: String },
+  state: { type: String },
+  logo: { type: String }, // Optional image URL
+  brochure: {
+    type: String,
+    default: ''
+  },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
 
 const Department = mongoose.model("Department", departmentSchema);
 
