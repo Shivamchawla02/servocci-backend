@@ -23,11 +23,12 @@ const addDepartment = async (req, res) => {
             description, 
             state,
             place,
-            logo // ✅ Accept logo
+            logo
         } = req.body;
 
-        if (!course_name || !dep_name || !duration || !eligibility || !fees || !state || !place) {
-            return res.status(400).json({ success: false, error: "All fields are required, including state and place" });
+        // Only require these fields:
+        if (!course_name || !dep_name || !state || !place) {
+            return res.status(400).json({ success: false, error: "course_name, dep_name, state, and place are required" });
         }
 
         const newDep = new Department({
@@ -40,7 +41,7 @@ const addDepartment = async (req, res) => {
             description,
             state,
             place,
-            logo // ✅ Save logo to DB
+            logo
         });
 
         await newDep.save();
@@ -49,6 +50,7 @@ const addDepartment = async (req, res) => {
         return res.status(500).json({ success: false, error: "Add department server error" });
     }
 };
+
 
 // Get total department count
 const getDepartmentCount = async (req, res) => {
