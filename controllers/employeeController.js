@@ -91,13 +91,11 @@ const getAllEmployees = async (req, res) => {
     let employees;
 
     if (user.role === 'admin') {
-      employees = await Employee.find({ createdAt: { $exists: true } })
-        .sort({ createdAt: -1 }) // sort descending by createdAt (newest first)
+      employees = await Employee.find()
         .populate('department')
         .populate('createdBy', 'name email');
     } else {
-      employees = await Employee.find({ createdBy: user._id, createdAt: { $exists: true } })
-        .sort({ createdAt: -1 })
+      employees = await Employee.find({ createdBy: user._id })
         .populate('department');
     }
 
@@ -107,7 +105,6 @@ const getAllEmployees = async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to fetch employees" });
   }
 };
-
 
 const getSingleEmployee = async (req, res) => {
   try {
