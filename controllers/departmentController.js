@@ -23,7 +23,9 @@ const addDepartment = async (req, res) => {
             description, 
             state,
             place,
-            logo
+            logo,
+            brochure,
+            fee_structure // ✅ new field
         } = req.body;
 
         // Only require these fields:
@@ -41,7 +43,9 @@ const addDepartment = async (req, res) => {
             description,
             state,
             place,
-            logo
+            logo,
+            brochure,
+            fee_structure // ✅ save it to the model
         });
 
         await newDep.save();
@@ -50,7 +54,6 @@ const addDepartment = async (req, res) => {
         return res.status(500).json({ success: false, error: "Add department server error" });
     }
 };
-
 
 // Get total department count
 const getDepartmentCount = async (req, res) => {

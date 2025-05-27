@@ -15,6 +15,10 @@ const departmentSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  fee_structure: {
+    type: String, // URL from Cloudinary
+    default: ''
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

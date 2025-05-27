@@ -12,8 +12,8 @@ import fs from 'fs';
 
 const router = express.Router();
 
-// Brochure upload config (Cloudinary)
-const brochureUpload = multer({ dest: 'temp/' });
+// File upload config (Cloudinary)
+const upload = multer({ dest: 'temp/' });
 
 router.get('/', authMiddleware, getDepartments);
 router.post('/add', authMiddleware, addDepartment);
@@ -33,7 +33,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// PUT /api/department/:id/logo - Update department logo
+// Update department logo
 router.put('/:id/logo', authMiddleware, async (req, res) => {
   try {
     const { logoUrl } = req.body;
@@ -59,8 +59,8 @@ router.put('/:id/logo', authMiddleware, async (req, res) => {
   }
 });
 
-// PUT /api/department/:id/brochure - Upload brochure to Cloudinary
-router.put('/:id/brochure', authMiddleware, brochureUpload.single('brochure'), async (req, res) => {
+// Upload brochure
+router.put('/:id/brochure', authMiddleware, upload.single('brochure'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No brochure file uploaded' });
@@ -73,7 +73,7 @@ router.put('/:id/brochure', authMiddleware, brochureUpload.single('brochure'), a
       overwrite: true
     });
 
-    fs.unlinkSync(req.file.path); // Clean up local temp file
+    fs.unlinkSync(req.file.path);
 
     const updatedDepartment = await Department.findByIdAndUpdate(
       req.params.id,
@@ -89,6 +89,39 @@ router.put('/:id/brochure', authMiddleware, brochureUpload.single('brochure'), a
   } catch (error) {
     console.error('Error uploading brochure:', error);
     res.status(500).json({ success: false, message: 'Server error while uploading brochure' });
+  }
+});
+
+// ✅ NEW: Upload fee structure
+router.put('/:id/fee-structure', authMiddleware, upload.single('fee_structure'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No fee structure file uploaded' });
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: 'raw',
+      folder: 'servocci/fee_structures',
+      public_id: `department-${req.params.id}-fee-structure`,
+      overwrite: true
+    });
+
+    fs.unlinkSync(req.file.path);
+
+    const updatedDepartment = await Department.findByIdAndUpdate(
+      req.params.id,
+      { fee_structure: result.secure_url },
+      { new: true }
+    );
+
+    if (!updatedDepartment) {
+      return res.status(404).json({ success: false, message: 'Department not found' });
+    }
+
+    res.status(200).json({ success: true, department: updatedDepartment });
+  } catch (error) {
+    console.error('Error uploading fee structure:', error);
+    res.status(500).json({ success: false, message: 'Server error while uploading fee structure' });
   }
 });
 
