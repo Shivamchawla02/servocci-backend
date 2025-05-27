@@ -83,8 +83,6 @@ const addEmployee = async (req, res) => {
   }
 };
 
-
-
 const getAllEmployees = async (req, res) => {
   try {
     const user = req.user;
@@ -140,10 +138,66 @@ export const updateLeadStatus = async (req, res) => {
       { leadStatus },
       { new: true }
     );
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Employee not found' });
+    }
     res.status(200).json({ success: true, employee: updated });
   } catch (err) {
     console.error("Error updating lead status:", err);
     res.status(500).json({ success: false, message: 'Failed to update lead status' });
+  }
+};
+
+const leadSummary = async (req, res) => {
+  try {
+    const user = req.user;
+
+    // Role-based filtering
+    const query = user.role === 'admin' ? {} : { createdBy: user._id };
+
+    const employees = await Employee.find(query, 'leadStatus');
+
+    // Initialize counts
+    const summary = {
+      Qualified: 0,
+      "Follow-up": 0,
+      Initiated: 0,
+      Received: 0,
+      Documentation: 0,
+      Closed: 0,
+      Rejected: 0,
+      Unqualified: 0,
+    };
+
+    employees.forEach(emp => {
+      const status = (emp.leadStatus || '').trim();
+
+      if (['Lead Open', 'Call Not Picked', 'Call Back'].includes(status)) {
+        summary.Qualified += 1;
+      } else if (status === 'Switch Off / Wrong No.') {
+        summary.Unqualified += 1;
+      } else if (status === 'Follow Up') {
+        summary["Follow-up"] += 1;
+      } else if (status === 'Admission Initiated') {
+        summary.Initiated += 1;
+      } else if (status === 'Documentation Done') {
+        summary.Documentation += 1;
+      } else if (status === 'Application Received') {
+        summary.Received += 1;
+      } else if (status === 'Application Rejected') {
+        summary.Rejected += 1;
+      } else if (status === 'Admission Closed') {
+        summary.Closed += 1;
+      } else {
+        // If no match, count as Unqualified or skip
+        summary.Unqualified += 1;
+      }
+    });
+
+    res.status(200).json(summary);
+  } catch (error) {
+    console.error("Error in leadSummary:", error);
+    res.status(500).json({ message: "Failed to generate lead summary" });
   }
 };
 
@@ -155,6 +209,9 @@ export const updateRemarks = async (req, res) => {
       { remarks },
       { new: true }
     );
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Employee not found' });
+    }
     res.status(200).json({ success: true, employee: updated });
   } catch (err) {
     console.error("Error updating remarks:", err);
@@ -162,12 +219,12 @@ export const updateRemarks = async (req, res) => {
   }
 };
 
-
 export default {
   addEmployee,
   getAllEmployees,
   getSingleEmployee,
   getEmployeeCount,
   updateLeadStatus,
-  updateRemarks
+  updateRemarks,
+  leadSummary
 };
