@@ -118,6 +118,8 @@ const getCouncellorCount = async (req, res) => {
 
 const getCouncellorById = async (req, res) => {
   try {
+    const { startDate, endDate } = req.query;
+
     const councellor = await Councellor.findById(req.params.id)
       .populate("userId", "email profileImage");
 
@@ -125,21 +127,46 @@ const getCouncellorById = async (req, res) => {
       return res.status(404).json({ success: false, message: "Councellor not found" });
     }
 
+    // Build date filter for UsageLog
+    const dateFilter = {};
+    if (startDate) {
+      dateFilter.$gte = new Date(startDate);
+    }
+    if (endDate) {
+      // To include the entire endDate day, set time to end of day
+      const endDateObj = new Date(endDate);
+      endDateObj.setHours(23, 59, 59, 999);
+      dateFilter.$lte = endDateObj;
+    }
+
+    const matchStage = {
+      counselorId: councellor._id,
+    };
+    if (startDate || endDate) {
+      matchStage.timestamp = dateFilter;
+    }
+
     const usageSummary = await UsageLog.aggregate([
-      { $match: { counselorId: councellor._id } },
+      { $match: matchStage },
       {
         $group: {
           _id: "$counselorId",
           totalDuration: { $sum: "$sessionDuration" },
           sessionCount: { $sum: 1 },
           lastSession: { $max: "$timestamp" },
+          avgDuration: { $avg: "$sessionDuration" },
         },
       },
     ]);
 
-    const summary = usageSummary[0] || { totalDuration: 0, sessionCount: 0, lastSession: null };
+    const summary = usageSummary[0] || {
+      totalDuration: 0,
+      sessionCount: 0,
+      lastSession: null,
+      avgDuration: 0,
+    };
 
-    // Optionally omit sensitive fields from councellor.toObject()
+    // Remove password or sensitive fields from councellor object
     const { password, ...councellorData } = councellor.toObject();
 
     res.status(200).json({
@@ -154,6 +181,7 @@ const getCouncellorById = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error while fetching councellor" });
   }
 };
+
 
 
 const getCouncellorByUserId = async (req, res) => {
