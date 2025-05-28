@@ -50,4 +50,25 @@ router.post("/end", async (req, res) => {
   }
 });
 
+// Get total usage time for a counselor
+router.get("/total-time/:counselorId", async (req, res) => {
+  const { counselorId } = req.params;
+
+  try {
+    const logs = await UsageLog.find({ counselorId, sessionDuration: { $ne: null } });
+
+    const totalSeconds = logs.reduce((sum, log) => sum + (log.sessionDuration || 0), 0);
+
+    res.status(200).json({
+      totalSeconds,
+      totalMinutes: Math.floor(totalSeconds / 60),
+      totalHours: (totalSeconds / 3600).toFixed(2),
+    });
+  } catch (err) {
+    console.error("Error calculating total usage time:", err);
+    res.status(500).json({ error: "Failed to calculate total usage time" });
+  }
+});
+
+
 export default router;
