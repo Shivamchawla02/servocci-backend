@@ -3,6 +3,7 @@ import path from "path";
 import Councellor from "../models/Councellor.js";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
+import UsageLog from '../models/UsageLog.js';
 
 // Multer setup
 const storage = multer.diskStorage({
@@ -122,7 +123,26 @@ const getCouncellorById = async (req, res) => {
       return res.status(404).json({ success: false, message: "Councellor not found" });
     }
 
-    res.status(200).json({ success: true, data: councellor });
+    // Aggregate usage summary
+    const usageSummary = await UsageLog.aggregate([
+      { $match: { counselorId: councellor._id } },
+      {
+        $group: {
+          _id: "$counselorId",
+          totalDuration: { $sum: "$sessionDuration" },
+          sessionCount: { $sum: 1 },
+          lastSession: { $max: "$timestamp" },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        ...councellor.toObject(),
+        usageSummary: usageSummary[0] || { totalDuration: 0, sessionCount: 0, lastSession: null },
+      },
+    });
   } catch (error) {
     console.error("Error fetching councellor by ID:", error);
     res.status(500).json({ success: false, message: "Server error while fetching councellor" });

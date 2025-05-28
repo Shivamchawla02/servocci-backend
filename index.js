@@ -9,6 +9,7 @@ import departmentRouter from './routes/department.js';
 import employeeRouter from './routes/employee.js';
 import CouncellorRouter from './routes/councellor.js';
 import connectToDatabase from './db/db.js';
+import usageLogRoutes from './routes/UsageLog.js'
 
 connectToDatabase();
 
@@ -21,6 +22,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/department', departmentRouter);
 app.use('/api/employee', employeeRouter);
 app.use('/api/councellor', CouncellorRouter);
+app.use("/api/usage-log", usageLogRoutes);
 
 // Serve static files (like images)
 app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
