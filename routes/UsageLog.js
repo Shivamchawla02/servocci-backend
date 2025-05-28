@@ -3,7 +3,7 @@ import UsageLog from "../models/UsageLog.js";
 
 const router = express.Router();
 
-// Start session - create UsageLog with startTime
+// Start session - create UsageLog with startTime only
 router.post("/start", async (req, res) => {
   const { counselorId } = req.body;
   if (!counselorId) {
@@ -24,7 +24,7 @@ router.post("/start", async (req, res) => {
   }
 });
 
-// End session - update UsageLog with endTime and duration
+// End session - update UsageLog with endTime, sessionDuration and timestamp
 router.post("/end", async (req, res) => {
   const { usageLogId } = req.body;
   if (!usageLogId) {
@@ -39,7 +39,7 @@ router.post("/end", async (req, res) => {
 
     log.endTime = new Date();
     log.sessionDuration = Math.floor((log.endTime - log.startTime) / 1000); // seconds
-    log.timestamp = log.startTime; // Or use startTime as the timestamp for consistency
+    log.timestamp = log.endTime; // timestamp is set as session end time
 
     await log.save();
 
