@@ -3,27 +3,50 @@ import UsageLog from "../models/UsageLog.js";
 
 const router = express.Router();
 
-// Public route — no authentication required for usage logging
-router.post("/", async (req, res) => {
-  const { counselorId, sessionDuration, timestamp } = req.body;
-
-  // Basic validation (optional)
-  if (!counselorId || !sessionDuration || !timestamp) {
-    return res.status(400).json({ error: "Missing required fields" });
+// Start session - create UsageLog with startTime
+router.post("/start", async (req, res) => {
+  const { counselorId } = req.body;
+  if (!counselorId) {
+    return res.status(400).json({ error: "Missing counselorId" });
   }
 
   try {
-    const log = new UsageLog({
+    const newLog = new UsageLog({
       counselorId,
-      sessionDuration,
-      timestamp,
+      startTime: new Date(),
     });
 
-    await log.save();
-    res.status(201).json({ message: "Usage log saved" });
+    const savedLog = await newLog.save();
+    res.status(201).json({ message: "Session started", usageLogId: savedLog._id });
   } catch (err) {
-    console.error("Error saving usage log:", err);
-    res.status(500).json({ error: "Failed to save usage log" });
+    console.error("Error starting session:", err);
+    res.status(500).json({ error: "Failed to start session" });
+  }
+});
+
+// End session - update UsageLog with endTime and duration
+router.post("/end", async (req, res) => {
+  const { usageLogId } = req.body;
+  if (!usageLogId) {
+    return res.status(400).json({ error: "Missing usageLogId" });
+  }
+
+  try {
+    const log = await UsageLog.findById(usageLogId);
+    if (!log) {
+      return res.status(404).json({ error: "UsageLog not found" });
+    }
+
+    log.endTime = new Date();
+    log.sessionDuration = Math.floor((log.endTime - log.startTime) / 1000); // seconds
+    log.timestamp = log.startTime; // Or use startTime as the timestamp for consistency
+
+    await log.save();
+
+    res.status(200).json({ message: "Session ended", sessionDuration: log.sessionDuration });
+  } catch (err) {
+    console.error("Error ending session:", err);
+    res.status(500).json({ error: "Failed to end session" });
   }
 });
 
