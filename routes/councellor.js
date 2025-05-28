@@ -5,7 +5,7 @@ import {
   upload,
   getAllCouncellors,
   getCouncellorCount,
-  getCouncellorById, // 👈 add this too
+  getCouncellorById,
   getCouncellorByUserId
 } from '../controllers/councellorController.js';
 
@@ -20,8 +20,9 @@ router.get('/list', authMiddleware, getAllCouncellors);
 // ✅ Get total number of Councellors
 router.get('/count', authMiddleware, getCouncellorCount);
 
-router.get('/:id', authMiddleware, getCouncellorById);
-
+// Important: place more specific route before dynamic ':id' param route
 router.get('/byUserId/:userId', authMiddleware, getCouncellorByUserId);
+
+router.get('/:id', authMiddleware, getCouncellorById);
 
 export default router;

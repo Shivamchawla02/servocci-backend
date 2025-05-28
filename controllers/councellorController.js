@@ -118,12 +118,13 @@ const getCouncellorCount = async (req, res) => {
 
 const getCouncellorById = async (req, res) => {
   try {
-    const councellor = await Councellor.findById(req.params.id).populate("userId", "email profileImage");
+    const councellor = await Councellor.findById(req.params.id)
+      .populate("userId", "email profileImage");
+
     if (!councellor) {
       return res.status(404).json({ success: false, message: "Councellor not found" });
     }
 
-    // Aggregate usage summary
     const usageSummary = await UsageLog.aggregate([
       { $match: { counselorId: councellor._id } },
       {
@@ -136,11 +137,16 @@ const getCouncellorById = async (req, res) => {
       },
     ]);
 
+    const summary = usageSummary[0] || { totalDuration: 0, sessionCount: 0, lastSession: null };
+
+    // Optionally omit sensitive fields from councellor.toObject()
+    const { password, ...councellorData } = councellor.toObject();
+
     res.status(200).json({
       success: true,
       data: {
-        ...councellor.toObject(),
-        usageSummary: usageSummary[0] || { totalDuration: 0, sessionCount: 0, lastSession: null },
+        ...councellorData,
+        usageSummary: summary,
       },
     });
   } catch (error) {
@@ -148,6 +154,7 @@ const getCouncellorById = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error while fetching councellor" });
   }
 };
+
 
 const getCouncellorByUserId = async (req, res) => {
   try {
