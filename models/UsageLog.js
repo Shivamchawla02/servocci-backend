@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const usageLogSchema = new mongoose.Schema({
-  counselorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Councelor', required: true },
+  counselorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Councellor', required: true },
   sessionDuration: { type: Number, required: true }, // in ms
   timestamp: { type: Date, required: true },
   startTime: Date,
