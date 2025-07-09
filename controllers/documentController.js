@@ -3,7 +3,7 @@ import Employee from '../models/Employee.js';
 export const uploadDocuments = async (req, res) => {
   try {
     const employeeId = req.params.id;
-    const documentUrls = req.body;
+    const { documents: documentUrls } = req.body;  // <-- extract inner object
 
     console.log("➡️ Received document URLs for employee ID:", employeeId);
     console.log("📝 Document URLs:\n", JSON.stringify(documentUrls, null, 2));
