@@ -3,38 +3,36 @@ import Employee from '../models/Employee.js';
 export const uploadDocuments = async (req, res) => {
   try {
     const employeeId = req.params.id;
-    const files = req.files;
+    const documentUrls = req.body;
 
-    console.log("➡️ Received upload request for employee ID:", employeeId);
+    console.log("➡️ Received document URLs for employee ID:", employeeId);
+    console.log("📝 Document URLs:\n", JSON.stringify(documentUrls, null, 2));
 
-    if (!files || Object.keys(files).length === 0) {
-      console.warn("⚠️ No files uploaded");
-      return res.status(400).json({
-        success: false,
-        message: "No documents uploaded.",
-      });
+    // Validate required fields (optional but good)
+    const requiredFields = [
+      'profilePhoto',
+      'aadharCard',
+      'panCard',
+      'tenthMarksheet',
+      'twelfthMarksheet',
+      'competitiveMarksheet',
+    ];
+
+    for (let field of requiredFields) {
+      if (!documentUrls[field]) {
+        return res.status(400).json({
+          success: false,
+          message: `Missing document URL: ${field}`,
+        });
+      }
     }
 
-    console.log("📁 Files received:", Object.keys(files));
-
-    // Extract uploaded Cloudinary URLs
-    const uploadedDocs = {
-      profilePhoto: files.profilePhoto?.[0]?.path || '',
-      aadharCard: files.aadharCard?.[0]?.path || '',
-      panCard: files.panCard?.[0]?.path || '',
-      tenthMarksheet: files.tenthMarksheet?.[0]?.path || '',
-      twelfthMarksheet: files.twelfthMarksheet?.[0]?.path || '',
-      competitiveMarksheet: files.competitiveMarksheet?.[0]?.path || '',
-    };
-
-    console.log("✅ Extracted Cloudinary URLs:\n", JSON.stringify(uploadedDocs, null, 2));
-
-    // Update employee
+    // Update employee document info
     const updatedEmployee = await Employee.findByIdAndUpdate(
       employeeId,
       {
         $set: {
-          documents: uploadedDocs,
+          documents: documentUrls,
           isDocumentsSubmitted: true,
         },
       },
@@ -42,26 +40,25 @@ export const uploadDocuments = async (req, res) => {
     );
 
     if (!updatedEmployee) {
-      console.error("❌ Employee not found with ID:", employeeId);
       return res.status(404).json({
         success: false,
         message: "Employee not found.",
       });
     }
 
-    console.log("🟢 Employee document data updated successfully.");
+    console.log("✅ Documents saved successfully for employee ID:", employeeId);
 
     res.status(200).json({
       success: true,
-      message: "Documents uploaded to Cloudinary and saved.",
-      documents: uploadedDocs,
+      message: "Documents uploaded and saved successfully.",
+      employee: updatedEmployee,
     });
   } catch (error) {
-    console.error("❌ Upload error:\n", error);
+    console.error("❌ Error in uploadDocuments:\n", error);
     res.status(500).json({
       success: false,
-      message: "Document upload failed.",
-      error: error.message, // helpful for frontend error logs
+      message: "Server error while saving documents.",
+      error: error.message,
     });
   }
 };

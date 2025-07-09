@@ -1,7 +1,6 @@
 import express from 'express';
 import employeeController from '../controllers/employeeController.js';
 import { uploadDocuments } from '../controllers/documentController.js';
-import upload from '../middleware/uploadMiddleware.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 import Employee from '../models/Employee.js'; // ✅ Import the model
 
@@ -51,15 +50,7 @@ router.get('/:id', authMiddleware, employeeController.getSingleEmployee);
 router.post(
   '/:id/upload-documents',
   authMiddleware,
-  upload.fields([
-    { name: 'profilePhoto', maxCount: 1 },
-    { name: 'aadharCard', maxCount: 1 },
-    { name: 'panCard', maxCount: 1 },
-    { name: 'tenthMarksheet', maxCount: 1 },
-    { name: 'twelfthMarksheet', maxCount: 1 },
-    { name: 'competitiveMarksheet', maxCount: 1 }
-  ]),
-  uploadDocuments
+  uploadDocuments // no multer middleware needed now
 );
 
 // PUT /api/employees/:id/lead-status
