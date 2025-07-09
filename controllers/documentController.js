@@ -27,7 +27,7 @@ export const uploadDocuments = async (req, res) => {
       competitiveMarksheet: files.competitiveMarksheet?.[0]?.path || '',
     };
 
-    console.log("✅ Extracted Cloudinary URLs:", uploadedDocs);
+    console.log("✅ Extracted Cloudinary URLs:\n", JSON.stringify(uploadedDocs, null, 2));
 
     // Update employee
     const updatedEmployee = await Employee.findByIdAndUpdate(
@@ -57,7 +57,7 @@ export const uploadDocuments = async (req, res) => {
       documents: uploadedDocs,
     });
   } catch (error) {
-    console.error("❌ Upload error:", error.message, error.stack);
+    console.error("❌ Upload error:\n", error);
     res.status(500).json({
       success: false,
       message: "Document upload failed.",
