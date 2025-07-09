@@ -6,7 +6,6 @@ import {
   getDepartmentCount
 } from '../controllers/departmentController.js';
 import Department from '../models/Department.js';
-import cloudinary from '../utils/cloudinary.js';
 import multer from 'multer';
 import fs from 'fs';
 
