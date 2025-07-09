@@ -6,8 +6,8 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => ({
     folder: 'servocci/student-documents',
-    format: ['jpg', 'jpeg', 'png', 'pdf'], // optional
-    public_id: `${req.params.phone}-${file.fieldname}-${Date.now()}`,
+    format: file.mimetype.split('/')[1], // dynamically set extension
+    public_id: `${req.params.phone || Date.now()}-${file.fieldname}`,
   }),
 });
 
