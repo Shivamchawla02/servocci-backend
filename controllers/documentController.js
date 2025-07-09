@@ -57,7 +57,7 @@ export const uploadDocuments = async (req, res) => {
       documents: uploadedDocs,
     });
   } catch (error) {
-    console.error("❌ Upload error:", error);
+    console.error("❌ Upload error:", error.message, error.stack);
     res.status(500).json({
       success: false,
       message: "Document upload failed.",
