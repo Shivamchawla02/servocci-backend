@@ -9,9 +9,12 @@ const addEmployee = async (req, res) => {
       nationality,
       phoneMobile,
       phoneHome,
+      parentMobile,   // ✅ NEW
       email,
       permanentAddress,
       aadhaarNumber,
+      regNumber,      // ✅ NEW
+      fatherName,     // ✅ NEW
       tenthSchool,
       tenthBoard,
       tenthYear,
@@ -46,6 +49,9 @@ const addEmployee = async (req, res) => {
       nationality,
       phoneMobile,
       phoneHome,
+      parentMobile,        // ✅ ADDED
+      regNumber,           // ✅ ADDED
+      fatherName,          // ✅ ADDED
       email,
       permanentAddress,
       aadhaarNumber,
@@ -82,6 +88,7 @@ const addEmployee = async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to add student" });
   }
 };
+
 
 const getAllEmployees = async (req, res) => {
   try {

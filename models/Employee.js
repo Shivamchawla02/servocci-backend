@@ -2,11 +2,13 @@ import mongoose from 'mongoose';
 
 const employeeSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
+  regNumber: { type: String }, // ✅ New
+  fatherName: { type: String }, // ✅ New
   dob: { type: Date },
   gender: { type: String },
   nationality: { type: String },
   phoneMobile: { type: String, required: true },
-  phoneHome: { type: String },
+  parentMobile: { type: String }, // ✅ Renamed from phoneHome
   email: { type: String },
   permanentAddress: { type: String },
   aadhaarNumber: { type: String },
@@ -67,29 +69,28 @@ const employeeSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  
+
   leadStatus: {
-  type: String,
-  enum: [
-    'Lead Open',
-    'Call Not Picked',
-    'Call Back',
-    'Switch Off / Wrong No.',
-    'Follow Up',
-    'Admission Initiated',
-    'Application Received',
-    'Documentation Done',
-    'Admission Closed',
-    'Application Rejected'
-  ],
-  default: ''
-},
+    type: String,
+    enum: [
+      'Lead Open',
+      'Call Not Picked',
+      'Call Back',
+      'Switch Off / Wrong No.',
+      'Follow Up',
+      'Admission Initiated',
+      'Application Received',
+      'Documentation Done',
+      'Admission Closed',
+      'Application Rejected'
+    ],
+    default: ''
+  },
 
-
-remarks: {
-  type: String,
-  default: ''
-}
+  remarks: {
+    type: String,
+    default: ''
+  }
 
 }, { timestamps: true });
 
