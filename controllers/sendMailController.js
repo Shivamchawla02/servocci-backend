@@ -1,9 +1,7 @@
 import nodemailer from 'nodemailer';
 import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
 
-// Setup multer to store files temporarily in memory
+// Setup multer to store files in memory
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
@@ -11,7 +9,7 @@ export const uploadAndSendMail = [
   upload.single('pdf'), // Accepts `pdf` field in multipart/form-data
   async (req, res) => {
     try {
-      const recipientEmail = req.body.recipientEmail;
+      const recipientEmail = req.body.universityEmail; // ✅ FIXED: Matches frontend field name
       const pdfBuffer = req.file?.buffer;
       const filename = req.file?.originalname || 'student-profile.pdf';
 
@@ -19,23 +17,23 @@ export const uploadAndSendMail = [
         return res.status(400).json({ message: 'Recipient email or PDF missing.' });
       }
 
-      // Nodemailer transporter using your domain email
+      // Nodemailer transporter using domain email
       const transporter = nodemailer.createTransport({
-        service: 'gmail', // Use your SMTP provider if using Zoho/Domain
+        service: 'gmail',
         auth: {
-          user: 'hello@servocci.com', // ✅ Use your domain email
-          pass: process.env.EMAIL_PASSWORD, // ✅ Store password in .env
+          user: process.env.EMAIL_USER,      // ✅ uses correct key from .env
+          pass: process.env.EMAIL_PASS,      // ✅ FIXED: should match .env
         },
       });
 
       const mailOptions = {
-        from: 'hello@servocci.com',
+        from: process.env.EMAIL_USER,
         to: recipientEmail,
         subject: 'Student Document Submission',
         text: 'Please find the attached student profile and documents.',
         attachments: [
           {
-            filename: filename,
+            filename,
             content: pdfBuffer,
             contentType: 'application/pdf',
           },
