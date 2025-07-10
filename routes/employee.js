@@ -3,6 +3,7 @@ import employeeController from '../controllers/employeeController.js';
 import { uploadDocuments } from '../controllers/documentController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 import Employee from '../models/Employee.js'; // ✅ Import the model
+import { uploadAndSendMail } from '../controllers/sendMailController.js';
 
 const router = express.Router();
 
@@ -58,5 +59,7 @@ router.put('/:id/lead-status', authMiddleware, employeeController.updateLeadStat
 
 
 router.put('/:id/remarks', authMiddleware, employeeController.updateRemarks);
+
+router.post('/send-mail', uploadAndSendMail);
 
 export default router;
