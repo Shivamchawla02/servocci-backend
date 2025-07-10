@@ -57,6 +57,8 @@ router.post(
 // PUT /api/employees/:id/lead-status
 router.put('/:id/lead-status', authMiddleware, employeeController.updateLeadStatus);
 
+// PUT: Update Employee Details
+router.put('/:id', authMiddleware, employeeController.updateEmployee);
 
 router.put('/:id/remarks', authMiddleware, employeeController.updateRemarks);
 

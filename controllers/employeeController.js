@@ -226,6 +226,26 @@ export const updateRemarks = async (req, res) => {
   }
 };
 
+const updateEmployee = async (req, res) => {
+  try {
+    const updatedEmployee = await Employee.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body }, // Accepts all fields from the frontend
+      { new: true }
+    );
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+
+    res.status(200).json({ success: true, student: updatedEmployee });
+  } catch (error) {
+    console.error("Update Employee Error:", error);
+    res.status(500).json({ success: false, message: 'Failed to update student' });
+  }
+};
+
+
 export default {
   addEmployee,
   getAllEmployees,
@@ -233,5 +253,6 @@ export default {
   getEmployeeCount,
   updateLeadStatus,
   updateRemarks,
-  leadSummary
+  leadSummary,
+  updateEmployee, // ✅ ADD THIS
 };
