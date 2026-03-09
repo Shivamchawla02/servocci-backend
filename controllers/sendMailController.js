@@ -1,5 +1,9 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import multer from 'multer';
+import 'dotenv/config';
+
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Setup multer to store files in memory
 const storage = multer.memoryStorage();
@@ -9,7 +13,7 @@ export const uploadAndSendMail = [
   upload.single('pdf'), // Accepts `pdf` field in multipart/form-data
   async (req, res) => {
     try {
-      const recipientEmail = req.body.universityEmail; // ✅ FIXED: Matches frontend field name
+      const recipientEmail = req.body.universityEmail;
       const pdfBuffer = req.file?.buffer;
       const filename = req.file?.originalname || 'student-profile.pdf';
 
@@ -17,35 +21,32 @@ export const uploadAndSendMail = [
         return res.status(400).json({ message: 'Recipient email or PDF missing.' });
       }
 
-      // Nodemailer transporter using domain email
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USER,      // ✅ uses correct key from .env
-          pass: process.env.EMAIL_PASS,      // ✅ FIXED: should match .env
-        },
-      });
-
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
+      // Send email using Resend
+      await resend.emails.send({
+        from: process.env.EMAIL_FROM,
         to: recipientEmail,
         subject: 'Student Document Submission',
         text: 'Please find the attached student profile and documents.',
         attachments: [
           {
-            filename,
-            content: pdfBuffer,
-            contentType: 'application/pdf',
+            filename: filename,
+            content: pdfBuffer.toString("base64"),
           },
         ],
-      };
+      });
 
-      await transporter.sendMail(mailOptions);
+      res.status(200).json({
+        success: true,
+        message: 'Email sent successfully.'
+      });
 
-      res.status(200).json({ success: true, message: 'Email sent successfully.' });
     } catch (err) {
       console.error('Email sending error:', err);
-      res.status(500).json({ success: false, message: 'Failed to send email.' });
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send email.'
+      });
     }
   },
 ];
