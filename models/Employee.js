@@ -86,7 +86,7 @@ const employeeSchema = new mongoose.Schema({
       'Admission Closed',
       'Application Rejected'
     ],
-    default: 'Pre Admission'
+    default: 'Lead Open'
   },
 
   remarks: {
