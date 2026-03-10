@@ -2,13 +2,13 @@ import mongoose from 'mongoose';
 
 const employeeSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
-  regNumber: { type: String }, // ✅ New
-  fatherName: { type: String }, // ✅ New
+  regNumber: { type: String },
+  fatherName: { type: String },
   dob: { type: Date },
   gender: { type: String },
   nationality: { type: String },
   phoneMobile: { type: String, required: true },
-  parentMobile: { type: String }, // ✅ Renamed from phoneHome
+  parentMobile: { type: String },
   email: { type: String },
   permanentAddress: { type: String },
   aadhaarNumber: { type: String },
@@ -25,22 +25,21 @@ const employeeSchema = new mongoose.Schema({
   twelfthPercentage: { type: String },
   subjectsTaken: { type: String },
 
-  // Institution & Course
+  // ✅ IMPORTANT FIX
+  // Changed from ObjectId → String
   department: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Department'
+    type: String
   },
+
   intendedMajor: { type: String },
   minor: { type: String },
   preferredTerm: { type: String },
 
-  // Financial
   scholarship: {
     type: Boolean,
     default: false,
   },
 
-  // Emergency Contact
   emergencyContactName: { type: String },
   emergencyPhone: { type: String },
   emergencyEmail: { type: String },
@@ -64,15 +63,18 @@ const employeeSchema = new mongoose.Schema({
     default: false
   },
 
+  // ✅ FIXED (No longer required)
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    default: null
   },
 
+  // ✅ FIXED ENUM + DEFAULT
   leadStatus: {
     type: String,
     enum: [
+      'Pre Admission',
       'Lead Open',
       'Call Not Picked',
       'Call Back',
@@ -84,7 +86,7 @@ const employeeSchema = new mongoose.Schema({
       'Admission Closed',
       'Application Rejected'
     ],
-    default: ''
+    default: 'Pre Admission'
   },
 
   remarks: {
