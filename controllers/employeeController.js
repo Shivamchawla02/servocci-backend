@@ -38,24 +38,12 @@ const addEmployee = async (req, res) => {
     if (!fullName || !phoneMobile) {
       return res.status(400).json({
         success: false,
-        error: "Please provide both fullName and phoneMobile for the student."
+        error: "Please provide both fullName and phoneMobile."
       });
     }
 
-    // 🔥 Detect if request is public (Pre Admission)
-    const isPublic = !req.user;
-
-    let createdBy = null;
-    let leadStatus = req.body.leadStatus || "Lead Open";
-
-    // If protected route
-    if (!isPublic) {
-      createdBy = req.user._id;
-    } 
-    // If public pre-admission
-    else {
-      leadStatus = "Pre Admission";
-    }
+    // ✅ SAFE detection
+    const hasUser = req.user && req.user._id;
 
     const newEmployee = new Employee({
       fullName,
@@ -88,8 +76,11 @@ const addEmployee = async (req, res) => {
       emergencyPhone,
       emergencyEmail,
       communicationConsent,
-      leadStatus,
-      createdBy
+
+      // ✅ If logged in user exists → normal add
+      // ✅ If not → public pre-admission
+      leadStatus: hasUser ? (req.body.leadStatus || "Lead Open") : "Pre Admission",
+      createdBy: hasUser ? req.user._id : null
     });
 
     await newEmployee.save();
@@ -102,7 +93,10 @@ const addEmployee = async (req, res) => {
 
   } catch (error) {
     console.error("Add Student Error:", error);
-    res.status(500).json({ success: false, error: "Failed to add student" });
+    res.status(500).json({
+      success: false,
+      error: error.message // 👈 shows real error
+    });
   }
 };
 
