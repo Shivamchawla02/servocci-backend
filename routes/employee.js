@@ -10,6 +10,9 @@ const router = express.Router();
 // POST: Add Employee
 router.post('/add', authMiddleware, employeeController.addEmployee);
 
+// ✅ Public Pre Admission
+router.post('/pre-admission', employeeController.addEmployee);
+
 // GET: Get all Employees
 router.get('/all', authMiddleware, employeeController.getAllEmployees);
 

@@ -9,12 +9,12 @@ const addEmployee = async (req, res) => {
       nationality,
       phoneMobile,
       phoneHome,
-      parentMobile,   // ✅ NEW
+      parentMobile,
       email,
       permanentAddress,
       aadhaarNumber,
-      regNumber,      // ✅ NEW
-      fatherName,     // ✅ NEW
+      regNumber,
+      fatherName,
       tenthSchool,
       tenthBoard,
       tenthYear,
@@ -32,7 +32,7 @@ const addEmployee = async (req, res) => {
       emergencyContactName,
       emergencyPhone,
       emergencyEmail,
-      communicationConsent 
+      communicationConsent
     } = req.body;
 
     if (!fullName || !phoneMobile) {
@@ -42,6 +42,21 @@ const addEmployee = async (req, res) => {
       });
     }
 
+    // 🔥 Detect if request is public (Pre Admission)
+    const isPublic = !req.user;
+
+    let createdBy = null;
+    let leadStatus = req.body.leadStatus || "Lead Open";
+
+    // If protected route
+    if (!isPublic) {
+      createdBy = req.user._id;
+    } 
+    // If public pre-admission
+    else {
+      leadStatus = "Pre Admission";
+    }
+
     const newEmployee = new Employee({
       fullName,
       dob,
@@ -49,9 +64,9 @@ const addEmployee = async (req, res) => {
       nationality,
       phoneMobile,
       phoneHome,
-      parentMobile,        // ✅ ADDED
-      regNumber,           // ✅ ADDED
-      fatherName,          // ✅ ADDED
+      parentMobile,
+      regNumber,
+      fatherName,
       email,
       permanentAddress,
       aadhaarNumber,
@@ -73,10 +88,12 @@ const addEmployee = async (req, res) => {
       emergencyPhone,
       emergencyEmail,
       communicationConsent,
-      createdBy: req.user._id
+      leadStatus,
+      createdBy
     });
 
     await newEmployee.save();
+
     res.status(201).json({
       success: true,
       message: "Student added successfully!",
