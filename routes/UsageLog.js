@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import UsageLog from "../models/UsageLog.js";
 
 const router = express.Router();
@@ -74,6 +75,10 @@ router.get("/daily-usage/:counselorId", async (req, res) => {
   try {
     const { counselorId } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(counselorId)) {
+      return res.status(400).json({ error: "Invalid counselorId" });
+    }
+
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
     sevenDaysAgo.setHours(0, 0, 0, 0);
@@ -89,12 +94,17 @@ router.get("/daily-usage/:counselorId", async (req, res) => {
       {
         $group: {
           _id: {
-            $dateToString: { format: "%Y-%m-%d", date: "$timestamp" },
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$timestamp",
+            },
           },
           totalDuration: { $sum: "$sessionDuration" },
         },
       },
-      { $sort: { _id: 1 } },
+      {
+        $sort: { _id: 1 },
+      },
     ]);
 
     res.status(200).json(dailyUsage);
@@ -103,6 +113,5 @@ router.get("/daily-usage/:counselorId", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch daily usage" });
   }
 });
-
 
 export default router;
