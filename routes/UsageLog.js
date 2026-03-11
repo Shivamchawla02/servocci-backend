@@ -70,5 +70,39 @@ router.get("/total-time/:counselorId", async (req, res) => {
   }
 });
 
+router.get("/daily-usage/:counselorId", async (req, res) => {
+  try {
+    const { counselorId } = req.params;
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+    sevenDaysAgo.setHours(0, 0, 0, 0);
+
+    const dailyUsage = await UsageLog.aggregate([
+      {
+        $match: {
+          counselorId: new mongoose.Types.ObjectId(counselorId),
+          sessionDuration: { $ne: null },
+          timestamp: { $gte: sevenDaysAgo },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$timestamp" },
+          },
+          totalDuration: { $sum: "$sessionDuration" },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    res.status(200).json(dailyUsage);
+  } catch (err) {
+    console.error("Error fetching daily usage:", err);
+    res.status(500).json({ error: "Failed to fetch daily usage" });
+  }
+});
+
 
 export default router;

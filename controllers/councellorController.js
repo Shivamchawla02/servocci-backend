@@ -140,8 +140,8 @@ const getCouncellorById = async (req, res) => {
     }
 
     const matchStage = {
-      counselorId: councellor._id,
-    };
+  counselorId: councellor.userId._id,
+};
     if (startDate || endDate) {
       matchStage.timestamp = dateFilter;
     }
