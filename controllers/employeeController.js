@@ -293,6 +293,73 @@ const checkMobile = async (req, res) => {
   }
 };
 
+const publicDocumentUpload = async (req, res) => {
+  try {
+    const {
+      fullName,
+      phoneMobile,
+      email,
+      counsellorCode,
+      documents,
+      leadStatus
+    } = req.body;
+
+    if (!fullName || !phoneMobile) {
+      return res.status(400).json({
+        success: false,
+        message: "Full name and mobile are required"
+      });
+    }
+
+    // ✅ Prevent duplicate mobile
+    const existing = await Employee.findOne({ phoneMobile });
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: "Mobile number already exists"
+      });
+    }
+
+    // ✅ Find counsellor by code
+    let createdBy = null;
+
+    if (counsellorCode) {
+      const Counsellor = (await import('../models/Councellor.js')).default;
+
+      const counsellor = await Counsellor.findOne({
+        counsellorCode
+      });
+
+      if (counsellor) {
+        createdBy = counsellor.userId; // adjust if your field differs
+      }
+    }
+
+    const newEmployee = new Employee({
+      fullName,
+      phoneMobile,
+      email,
+      documents,
+      leadStatus: leadStatus || "Application Received",
+      createdBy
+    });
+
+    await newEmployee.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Documents submitted successfully",
+      employee: newEmployee
+    });
+
+  } catch (error) {
+    console.error("Public Document Upload Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
 
 export default {
   addEmployee,
@@ -303,5 +370,6 @@ export default {
   updateRemarks,
   leadSummary,
   updateEmployee,
-  checkMobile, // ✅ ADD THIS
+  checkMobile,
+  publicDocumentUpload // ✅ ADD THIS
 };
