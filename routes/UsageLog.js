@@ -114,4 +114,23 @@ router.get("/daily-usage/:counselorId", async (req, res) => {
   }
 });
 
+// Get all sessions for a counselor
+router.get("/sessions/:counselorId", async (req, res) => {
+  try {
+    const { counselorId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(counselorId)) {
+      return res.status(400).json({ error: "Invalid counselorId" });
+    }
+
+    const sessions = await UsageLog.find({ counselorId })
+      .sort({ startTime: -1 }); // newest first
+
+    res.status(200).json(sessions);
+  } catch (err) {
+    console.error("Error fetching sessions:", err);
+    res.status(500).json({ error: "Failed to fetch sessions" });
+  }
+});
+
 export default router;
