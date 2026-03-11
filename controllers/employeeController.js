@@ -256,6 +256,43 @@ const updateEmployee = async (req, res) => {
   }
 };
 
+const checkMobile = async (req, res) => {
+  try {
+    const { mobile } = req.params;
+
+    if (!mobile) {
+      return res.status(400).json({
+        success: false,
+        message: "Mobile number is required",
+      });
+    }
+
+    const existing = await Employee.findOne({
+      phoneMobile: mobile,
+    });
+
+    if (existing) {
+      return res.status(200).json({
+        success: true,
+        exists: true,
+        employee: existing,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      exists: false,
+    });
+
+  } catch (error) {
+    console.error("Check mobile error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 
 export default {
   addEmployee,
@@ -265,5 +302,6 @@ export default {
   updateLeadStatus,
   updateRemarks,
   leadSummary,
-  updateEmployee, // ✅ ADD THIS
+  updateEmployee,
+  checkMobile, // ✅ ADD THIS
 };

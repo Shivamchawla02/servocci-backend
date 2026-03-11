@@ -13,6 +13,8 @@ router.post('/add', authMiddleware, employeeController.addEmployee);
 // ✅ Public Pre Admission
 router.post('/pre-admission', employeeController.addEmployee);
 
+router.get('/check-mobile/:mobile', employeeController.checkMobile); // ✅ ADD HERE
+
 // GET: Get all Employees
 router.get('/all', authMiddleware, employeeController.getAllEmployees);
 
