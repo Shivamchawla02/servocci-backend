@@ -15,6 +15,24 @@ router.post('/pre-admission', employeeController.preAdmission);
 
 router.get('/check-mobile/:mobile', employeeController.checkMobile); // ✅ ADD HERE
 
+router.post(
+  "/bulk-upload",
+  authMiddleware,
+  employeeController.bulkUploadEmployees
+);
+
+router.get(
+  "/unassigned",
+  authMiddleware,
+  employeeController.getUnassignedLeads
+);
+
+router.post(
+  "/assign-leads",
+  authMiddleware,
+  employeeController.assignLeads
+);
+
 router.post('/public-document-upload', employeeController.publicDocumentUpload); // ✅ HERE
 
 // GET: Get all Employees

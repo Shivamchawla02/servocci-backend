@@ -217,6 +217,115 @@ const getSingleEmployee = async (req, res) => {
   }
 };
 
+export const bulkUploadEmployees = async (req, res) => {
+  try {
+    const { students } = req.body;
+
+    if (!students || students.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "No students data provided",
+      });
+    }
+
+    // 🔥 Prepare data
+    const preparedStudents = students.map((s) => ({
+      fullName: s.fullName,
+      phoneMobile: s.phoneMobile,
+      email: s.email,
+      permanentAddress: s.permanentAddress,
+      twelfthSchool: s.twelfthSchool,
+      subjectsTaken: s.subjectsTaken,
+
+      // ✅ IMPORTANT LOGIC
+      createdBy: null, // unassigned
+      leadStatus: "Lead Open",
+    }));
+
+    // 🔥 Insert Many
+    const inserted = await Employee.insertMany(preparedStudents, {
+      ordered: false, // skip duplicates
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: `${inserted.length} students uploaded successfully`,
+      data: inserted,
+    });
+
+  } catch (error) {
+    console.error("Bulk Upload Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const getUnassignedLeads = async (req, res) => {
+  try {
+    const leads = await Employee.find({
+      createdBy: null,
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: leads,
+    });
+
+  } catch (error) {
+    console.error("Fetch Leads Error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const assignLeads = async (req, res) => {
+  try {
+    const { studentIds, counsellorId } = req.body;
+
+    if (!studentIds || studentIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "No students selected",
+      });
+    }
+
+    if (!counsellorId) {
+      return res.status(400).json({
+        success: false,
+        error: "Counsellor not selected",
+      });
+    }
+
+    // 🔥 Update many
+    const result = await Employee.updateMany(
+      { _id: { $in: studentIds } },
+      {
+        $set: {
+          createdBy: counsellorId,
+          leadStatus: "Lead Open",
+        },
+      }
+    );
+
+    res.json({
+      success: true,
+      message: `${result.modifiedCount} leads assigned successfully`,
+    });
+
+  } catch (error) {
+    console.error("Assign Leads Error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 export const getEmployeeCount = async (req, res) => {
   try {
     const count = await Employee.countDocuments();
