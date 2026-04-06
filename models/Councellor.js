@@ -16,7 +16,7 @@ const councellorSchema = new Schema({
     required: true,
     unique: true,
     trim: true,
-  },
+  },  
   
   phone: {
   type: String,

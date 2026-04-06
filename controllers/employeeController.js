@@ -8,7 +8,6 @@ const addEmployee = async (req, res) => {
       gender,
       nationality,
       phoneMobile,
-      phoneHome,
       parentMobile,
       email,
       permanentAddress,
@@ -27,23 +26,16 @@ const addEmployee = async (req, res) => {
       department,
       intendedMajor,
       minor,
-      preferredTerm,
       scholarship,
+      preferredTerm,
       emergencyContactName,
       emergencyPhone,
       emergencyEmail,
-      communicationConsent
+      communicationConsent,
     } = req.body;
 
-    if (!fullName || !phoneMobile) {
-      return res.status(400).json({
-        success: false,
-        error: "Please provide both fullName and phoneMobile."
-      });
-    }
-
-    // ✅ SAFE detection
-    const hasUser = req.user && req.user._id;
+    // 🔥 AUTO SET createdBy
+    const createdBy = req.user?.id || req.user?._id;
 
     const newEmployee = new Employee({
       fullName,
@@ -51,13 +43,12 @@ const addEmployee = async (req, res) => {
       gender,
       nationality,
       phoneMobile,
-      phoneHome,
       parentMobile,
-      regNumber,
-      fatherName,
       email,
       permanentAddress,
       aadhaarNumber,
+      regNumber,
+      fatherName,
       tenthSchool,
       tenthBoard,
       tenthYear,
@@ -67,35 +58,43 @@ const addEmployee = async (req, res) => {
       twelfthYear,
       twelfthPercentage,
       subjectsTaken,
-      department: department || undefined,
+      department,
       intendedMajor,
       minor,
-      preferredTerm,
       scholarship,
+      preferredTerm,
       emergencyContactName,
       emergencyPhone,
       emergencyEmail,
       communicationConsent,
 
-      // ✅ If logged in user exists → normal add
-      // ✅ If not → public pre-admission
-      leadStatus: hasUser ? (req.body.leadStatus || "Lead Open") : "Pre Admission",
-      createdBy: hasUser ? req.user._id : null
+      // ✅ KEY LINE
+      createdBy
     });
 
     await newEmployee.save();
 
-    res.status(201).json({
+    return res.status(200).json({
       success: true,
-      message: "Student added successfully!",
-      student: newEmployee
+      message: "Student added successfully",
+      employee: newEmployee,
     });
 
   } catch (error) {
-    console.error("Add Student Error:", error);
-    res.status(500).json({
+    console.error("Add Employee Error:", error);
+
+    // Handle duplicate errors
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({
+        success: false,
+        error: `${field} already exists`,
+      });
+    }
+
+    return res.status(500).json({
       success: false,
-      error: error.message // 👈 shows real error
+      error: error.message || "Server error",
     });
   }
 };
