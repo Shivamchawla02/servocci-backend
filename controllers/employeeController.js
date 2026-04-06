@@ -583,5 +583,8 @@ export default {
   leadSummary,
   updateEmployee,
   checkMobile,
-  publicDocumentUpload // ✅ ADD THIS
+  publicDocumentUpload, // ✅ ADD THIS
+  bulkUploadEmployees,
+  getUnassignedLeads,
+  assignLeads
 };
