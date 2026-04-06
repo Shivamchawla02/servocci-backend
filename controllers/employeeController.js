@@ -1,4 +1,7 @@
 import Employee from '../models/Employee.js';
+import Councellor from "../models/Councellor.js"; // 🔥 make sure this is imported
+
+
 
 const addEmployee = async (req, res) => {
   try {
@@ -99,6 +102,82 @@ const addEmployee = async (req, res) => {
   }
 };
 
+const preAdmission = async (req, res) => {
+  try {
+    const {
+      fullName,
+      dob,
+      gender,
+      phoneMobile,
+      email,
+      fatherName,
+      intendedMajor,
+      department,
+      communicationConsent,
+      counsellorCode
+    } = req.body;
+
+    if (!fullName || !phoneMobile || !counsellorCode) {
+      return res.status(400).json({
+        success: false,
+        error: "Required fields missing"
+      });
+    }
+
+    // 🔥 STEP 1: Find counsellor
+    const counsellor = await Councellor.findOne({ counsellorCode });
+
+    if (!counsellor) {
+      return res.status(404).json({
+        success: false,
+        error: "Invalid counsellor code"
+      });
+    }
+
+    // 🔥 STEP 2: Get userId
+    const createdBy = counsellor.userId;
+
+    // 🔥 STEP 3: Create employee
+    const newEmployee = new Employee({
+      fullName,
+      dob,
+      gender,
+      phoneMobile,
+      email,
+      fatherName,
+      intendedMajor,
+      department,
+      communicationConsent,
+
+      leadStatus: "Pre Admission",
+      createdBy
+    });
+
+    await newEmployee.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Pre-admission submitted successfully",
+      student: newEmployee
+    });
+
+  } catch (error) {
+    console.error("Pre Admission Error:", error);
+
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({
+        success: false,
+        error: `${field} already exists`,
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
 
 const getAllEmployees = async (req, res) => {
   try {
