@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/add', authMiddleware, employeeController.addEmployee);
 
 // ✅ Public Pre Admission
-router.post('/pre-admission', employeeController.addEmployee);
+router.post('/pre-admission', employeeController.preAdmission);
 
 router.get('/check-mobile/:mobile', employeeController.checkMobile); // ✅ ADD HERE
 

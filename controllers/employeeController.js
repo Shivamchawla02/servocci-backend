@@ -441,6 +441,7 @@ const publicDocumentUpload = async (req, res) => {
 
 export default {
   addEmployee,
+  preAdmission,
   getAllEmployees,
   getSingleEmployee,
   getEmployeeCount,
