@@ -228,29 +228,53 @@ export const bulkUploadEmployees = async (req, res) => {
       });
     }
 
-    // 🔥 Prepare data
-    const preparedStudents = students.map((s) => ({
+    // ✅ FILTER VALID DATA FIRST
+    const validStudents = students.filter(
+      (s) => s.fullName && s.phoneMobile
+    );
+
+    if (validStudents.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "No valid students (fullName & phone required)",
+      });
+    }
+
+    // ✅ PREPARE DATA
+    const preparedStudents = validStudents.map((s) => ({
       fullName: s.fullName,
       phoneMobile: s.phoneMobile,
-      email: s.email,
-      permanentAddress: s.permanentAddress,
-      twelfthSchool: s.twelfthSchool,
-      subjectsTaken: s.subjectsTaken,
+      email: s.email || "",
+      permanentAddress: s.permanentAddress || "",
+      twelfthSchool: s.twelfthSchool || "",
+      subjectsTaken: s.subjectsTaken || "",
 
-      // ✅ IMPORTANT LOGIC
-      createdBy: null, // unassigned
+      createdBy: null,
       leadStatus: "Lead Open",
     }));
 
-    // 🔥 Insert Many
-    const inserted = await Employee.insertMany(preparedStudents, {
-      ordered: false, // skip duplicates
-    });
+    let inserted = [];
+    let failed = [];
 
-    return res.status(201).json({
+    // ✅ SAFE INSERT (NO CRASH)
+    for (let student of preparedStudents) {
+      try {
+        const saved = await Employee.create(student);
+        inserted.push(saved);
+      } catch (err) {
+        failed.push({
+          student,
+          error: err.message,
+        });
+      }
+    }
+
+    return res.status(200).json({
       success: true,
-      message: `${inserted.length} students uploaded successfully`,
-      data: inserted,
+      message: `${inserted.length} uploaded, ${failed.length} failed`,
+      insertedCount: inserted.length,
+      failedCount: failed.length,
+      failedData: failed,
     });
 
   } catch (error) {
