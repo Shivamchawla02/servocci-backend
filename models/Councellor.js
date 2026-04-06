@@ -19,26 +19,28 @@ const councellorSchema = new Schema({
   },
   
   phone: {
-    type: String,
-    unique: true,
-    trim: true,
-  },
-  aadhaar: {
-    type: String,
-    unique: true,
-    trim: true,
-  },
-  pan: {
-    type: String,
-    unique: true,
-    uppercase: true,
-    trim: true,
-  },
-  username: {
-    type: String,
-    unique: true,
-    trim: true,
-  },
+  type: String,
+  unique: true,
+  sparse: true,
+},
+
+aadhaar: {
+  type: String,
+  unique: true,
+  sparse: true,
+},
+
+pan: {
+  type: String,
+  unique: true,
+  sparse: true,
+},
+
+username: {
+  type: String,
+  unique: true,
+  sparse: true,
+},
   gst: {
     type: String,
     default: '',
