@@ -28,20 +28,32 @@ const addCouncellor = async (req, res) => {
       username,
       gst,
       password,
+      confirmPassword,
       role,
       email,
     } = req.body;
 
-    const user = await User.findOne({ email });
-    if (user) {
-      return res
-        .status(400)
-        .json({ success: false, error: "User already registered in CMS" });
+    // ✅ Password match check
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        error: "Passwords do not match",
+      });
     }
 
+    // ✅ Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        error: "User already registered",
+      });
+    }
+
+    // ✅ Hash password
     const hashPassword = await bcrypt.hash(password, 10);
 
-    // Save User
+    // ✅ Create User
     const newUser = new User({
       name,
       email,
@@ -52,46 +64,61 @@ const addCouncellor = async (req, res) => {
 
     const savedUser = await newUser.save();
 
-    // Generate unique 4-digit counsellorCode
-    const latestCouncellor = await Councellor.findOne().sort({ counsellorCode: -1 });
-    let counsellorCode = "0001"; // Default value if no counselors exist
+    // ✅ Generate UNIQUE 4-digit counsellorCode
+    let counsellorCode;
+    let exists = true;
 
-        if (
-      latestCouncellor &&
-      latestCouncellor.counsellorCode &&
-      /^\d{4}$/.test(latestCouncellor.counsellorCode)
-    ) {
-      const newCode = parseInt(latestCouncellor.counsellorCode, 10) + 1;
-      counsellorCode = newCode.toString().padStart(4, "0");
-    } else {
-      counsellorCode = "0001";
+    while (exists) {
+      const randomCode = Math.floor(1000 + Math.random() * 9000).toString();
+      const found = await Councellor.findOne({ counsellorCode: randomCode });
+
+      if (!found) {
+        counsellorCode = randomCode;
+        exists = false;
+      }
     }
 
-    // Save Councellor
+    // ✅ Create Counsellor (ONLY include fields if they exist)
     const newCouncellor = new Councellor({
       userId: savedUser._id,
       name,
       email,
-      phone,
-      aadhaar,
-      pan,
-      username,
-      gst,
       password: hashPassword,
-      role,
-      counsellorCode, // Add the counsellorCode here
+      role: role || "councelor",
+      counsellorCode,
+
+      ...(phone && { phone }),
+      ...(aadhaar && { aadhaar }),
+      ...(pan && { pan }),
+      ...(username && { username }),
+      ...(gst && { gst }),
     });
 
     await newCouncellor.save();
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Councellor created successfully!" });
+    return res.status(200).json({
+      success: true,
+      message: "Counsellor created successfully!",
+      counsellor: newCouncellor,
+    });
+
   } catch (error) {
-    console.error("Error adding Councellor:", error);
-    return res
-      .status(500)
-      .json({ success: false, error: "Server error in adding councellor" });
+    console.error("FULL ERROR:", error);
+
+    // ✅ Handle duplicate key error
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+
+      return res.status(400).json({
+        success: false,
+        error: `${field} already exists`,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Server error in adding counsellor",
+    });
   }
 };
 
