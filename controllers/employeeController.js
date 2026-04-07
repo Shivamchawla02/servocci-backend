@@ -190,13 +190,18 @@ const getAllEmployees = async (req, res) => {
         .populate('createdBy', 'name email');
     } else {
       employees = await Employee.find({ createdBy: user._id })
-        .populate('department');
+        .populate('department')
+        .populate('createdBy', 'name email'); // ✅ ADD THIS
     }
 
     res.status(200).json({ success: true, employees });
+
   } catch (error) {
     console.error("Get Employees Error:", error);
-    res.status(500).json({ success: false, error: "Failed to fetch employees" });
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch employees"
+    });
   }
 };
 
