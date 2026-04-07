@@ -323,27 +323,24 @@ export const assignLeads = async (req, res) => {
       });
     }
 
-    if (!counsellorId) {
-      return res.status(400).json({
-        success: false,
-        error: "Counsellor not selected",
-      });
+    // 🔥 Allow null (unassign)
+    const updateData = {
+      createdBy: counsellorId || null,
+    };
+
+    // ✅ Only reset lead status when assigning (not unassigning)
+    if (counsellorId) {
+      updateData.leadStatus = "Lead Open";
     }
 
-    // 🔥 Update many
     const result = await Employee.updateMany(
       { _id: { $in: studentIds } },
-      {
-        $set: {
-          createdBy: counsellorId || null,
-          leadStatus: "Lead Open",
-        },
-      }
+      { $set: updateData }
     );
 
     res.json({
       success: true,
-      message: `${result.modifiedCount} leads assigned successfully`,
+      message: `${result.modifiedCount} leads updated successfully`,
     });
 
   } catch (error) {
