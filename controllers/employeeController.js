@@ -335,7 +335,7 @@ export const assignLeads = async (req, res) => {
       { _id: { $in: studentIds } },
       {
         $set: {
-          createdBy: counsellorId,
+          createdBy: counsellorId || null,
           leadStatus: "Lead Open",
         },
       }
