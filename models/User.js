@@ -4,7 +4,11 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ["admin", "councelor"], required: true },
+  role: { 
+  type: String, 
+  enum: ["admin", "manager", "councelor"], 
+  required: true 
+},
   profileImage: { type: String },
   resetToken: { type: String },
   resetTokenExpiration: { type: Date },

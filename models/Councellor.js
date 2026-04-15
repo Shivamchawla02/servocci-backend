@@ -52,10 +52,10 @@ username: {
     required: true,
   },
   role: {
-    type: String,
-    enum: ['councelor', 'admin'],
-    default: 'councelor',
-  },
+  type: String,
+  enum: ['admin', 'manager', 'councelor'],
+  default: 'councelor',
+},
   counsellorCode: {
     type: String,
     unique: true,
