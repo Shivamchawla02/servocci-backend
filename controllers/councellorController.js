@@ -53,12 +53,12 @@ const addCouncellor = async (req, res) => {
     // ✅ Hash password
     const hashPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Create User
+    // ✅ Create User (ADMIN CAN CREATE manager/counselor)
     const newUser = new User({
       name,
       email,
       password: hashPassword,
-      role,
+      role, // 🔥 will store manager also
       profileImage: req.file ? req.file.filename : "",
     });
 
@@ -78,34 +78,46 @@ const addCouncellor = async (req, res) => {
       }
     }
 
-    // ✅ Create Counsellor (ONLY include fields if they exist)
+    // ✅ CLEAN EMPTY VALUES (🔥 MAIN FIX)
+    const cleanField = (field) => {
+      if (!field || field.trim() === "") return undefined;
+      return field.trim();
+    };
+
+    const cleanedPhone = cleanField(phone);
+    const cleanedAadhaar = cleanField(aadhaar);
+    const cleanedPan = cleanField(pan);
+    const cleanedUsername = cleanField(username);
+    const cleanedGst = cleanField(gst);
+
+    // ✅ Create Counsellor / Manager entry
     const newCouncellor = new Councellor({
       userId: savedUser._id,
       name,
       email,
       password: hashPassword,
-      role: role || "councelor",
+      role: role || "councelor", // 🔥 supports manager
       counsellorCode,
 
-      ...(phone && { phone }),
-      ...(aadhaar && { aadhaar }),
-      ...(pan && { pan }),
-      ...(username && { username }),
-      ...(gst && { gst }),
+      ...(cleanedPhone && { phone: cleanedPhone }),
+      ...(cleanedAadhaar && { aadhaar: cleanedAadhaar }),
+      ...(cleanedPan && { pan: cleanedPan }),
+      ...(cleanedUsername && { username: cleanedUsername }),
+      ...(cleanedGst && { gst: cleanedGst }),
     });
 
     await newCouncellor.save();
 
     return res.status(200).json({
       success: true,
-      message: "Counsellor created successfully!",
+      message: "User created successfully!",
       counsellor: newCouncellor,
     });
 
   } catch (error) {
     console.error("FULL ERROR:", error);
 
-    // ✅ Handle duplicate key error
+    // ✅ Handle duplicate key error properly
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
 
@@ -117,7 +129,7 @@ const addCouncellor = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      error: error.message || "Server error in adding counsellor",
+      error: error.message || "Server error in adding user",
     });
   }
 };
