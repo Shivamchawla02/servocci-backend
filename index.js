@@ -10,6 +10,7 @@ import employeeRouter from './routes/employee.js';
 import CouncellorRouter from './routes/councellor.js';
 import connectToDatabase from './db/db.js';
 import usageLogRoutes from './routes/UsageLog.js'
+import emailRoutes from "./routes/email.js";
 
 connectToDatabase();
 
@@ -39,6 +40,7 @@ app.use('/api/department', departmentRouter);
 app.use('/api/employee', employeeRouter);
 app.use('/api/councellor', CouncellorRouter);
 app.use('/api/usage-log', usageLogRoutes);
+app.use("/api/email", emailRoutes);
 
 // Serve static files
 app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
