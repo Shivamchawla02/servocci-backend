@@ -1,6 +1,7 @@
 import Employee from "../models/Employee.js";
 import EmailLog from "../models/EmailLog.js";
 import { sendEmail } from "../services/emailService.js";
+import emailTemplates from "../templates/email/index.js";
 
 export const sendStudentEmail = async (req, res) => {
   try {
